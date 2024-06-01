@@ -1,5 +1,6 @@
 import pygame
 import sys
+import serial
 
 pygame.init()
 
@@ -94,9 +95,25 @@ def draw_vertical_bar(value, base_x, base_y):
     bar_rect = pygame.Rect(base_x, base_y - bar_height, BAR_WIDTH, bar_height)
     pygame.draw.rect(screen, (0, 255, 0), bar_rect)
 
+# Initialize Serial connection
+try:
+    ser = serial.Serial('/dev/ttyUSB1', 115200, timeout=1)
+except serial.SerialException as e:
+    print(f"Serial error: {e}")
+    sys.exit(1)
+
 # Main loop
 def main():
     clock = pygame.time.Clock()
+
+    left_axis_x_old = 0    
+    left_axis_y_old = 0
+    left_trigger_axis_old = 0
+    
+    right_axis_x_old = 0    
+    right_axis_y_old = 0
+    right_trigger_axis_old = 0
+
 
     while True:
         for event in pygame.event.get():
@@ -113,48 +130,73 @@ def main():
         # Example areas to highlight based on joystick input
         if joystick.get_button(0):
             highlight_area(BUTTON_0_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B0\n')
 
         if joystick.get_button(1):
             highlight_area(BUTTON_1_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B1\n')
 
         if joystick.get_button(2):
             highlight_area(BUTTON_2_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B2\n')
 
         if joystick.get_button(3):
             highlight_area(BUTTON_3_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B3\n')
             
         if joystick.get_button(4):
             highlight_area(BUTTON_4_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B4\n')
             
         if joystick.get_button(5):
             highlight_area(BUTTON_5_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B5\n')
             
         if joystick.get_button(6):
             highlight_area(BUTTON_6_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B6\n')
             
         if joystick.get_button(7):
             highlight_area(BUTTON_7_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B7\n')
 
         # Add more button/axis mappings here...
 
         left_axis_x = joystick.get_axis(0)
+        if left_axis_x != left_axis_x_old:
+            ser.write(f"LX{left_axis_x}\n".encode())
+            left_axis_x_old = left_axis_x
 
         left_axis_y = joystick.get_axis(1)
+        if left_axis_y != left_axis_y_old:
+            ser.write(f"LY{left_axis_y}\n".encode())
+            left_axis_y_old = left_axis_y
 
         left_trigger_axis = joystick.get_axis(2)
+        if left_trigger_axis != left_trigger_axis_old:
+            ser.write(f"LT{left_trigger_axis}\n".encode())
+            left_trigger_axis_old = left_trigger_axis
 
         right_axis_x = joystick.get_axis(3)
+        if right_axis_x != right_axis_x_old:
+            ser.write(f"RX{right_axis_x}\n".encode())
+            right_axis_x_old = right_axis_x
 
         right_axis_y = joystick.get_axis(4)
+        if right_axis_y != right_axis_y_old:
+            ser.write(f"RY{right_axis_y}\n".encode())
+            right_axis_y_old = right_axis_y
 
         right_trigger_axis = joystick.get_axis(5)
+        if right_trigger_axis != right_trigger_axis_old:
+            ser.write(f"RT{right_trigger_axis}\n".encode())
+            right_trigger_axis_old = right_trigger_axis
 
         draw_joystick_position(left_axis_x, left_axis_y, 254, 266)
         draw_vertical_bar(left_trigger_axis, 20, 376)
 
         draw_joystick_position(right_axis_x, right_axis_y, 1025, 267)
         draw_vertical_bar(right_trigger_axis, 1238, 376)
-
 
         # Update the display
         pygame.display.flip()
