@@ -114,6 +114,15 @@ def main():
     right_axis_y_old = 0
     right_trigger_axis_old = 0
 
+    button0_on = False
+    button1_on = False
+    button2_on = False
+    button3_on = False
+    button4_on = False
+    button5_on = False
+    button6_on = False
+    button7_on = False
+
 
     while True:
         for event in pygame.event.get():
@@ -128,67 +137,107 @@ def main():
         screen.blit(controller_img, controller_rect)
 
         # Example areas to highlight based on joystick input
-        if joystick.get_button(0):
+        if joystick.get_button(0) and not button0_on:
             highlight_area(BUTTON_0_POS, BUTTON_INDICATOR_COLOR)  
-            ser.write(b'B0\n')
+            ser.write(b'B0ON\n')
+            button0_on = True
 
-        if joystick.get_button(1):
+        if not joystick.get_button(0) and button0_on:
+            ser.write(b'B0OFF\n')
+            button0_on = False
+            
+        if joystick.get_button(1) and not button1_on:
             highlight_area(BUTTON_1_POS, BUTTON_INDICATOR_COLOR)  
-            ser.write(b'B1\n')
+            ser.write(b'B1ON\n')
+            button1_on = True
 
-        if joystick.get_button(2):
+        if not joystick.get_button(1) and button1_on:
+            ser.write(b'B1OFF\n')
+            button1_on = False
+
+        if joystick.get_button(2) and not button2_on:
             highlight_area(BUTTON_2_POS, BUTTON_INDICATOR_COLOR)  
-            ser.write(b'B2\n')
+            ser.write(b'B2ON\n')
+            button2_on = True
 
-        if joystick.get_button(3):
+        if not joystick.get_button(2) and button2_on:
+            ser.write(b'B2OFF\n')
+            button2_on = False
+
+        if joystick.get_button(3) and not button3_on:
             highlight_area(BUTTON_3_POS, BUTTON_INDICATOR_COLOR)  
-            ser.write(b'B3\n')
-            
-        if joystick.get_button(4):
-            highlight_area(BUTTON_4_POS, BUTTON_INDICATOR_COLOR)  
-            ser.write(b'B4\n')
-            
-        if joystick.get_button(5):
-            highlight_area(BUTTON_5_POS, BUTTON_INDICATOR_COLOR)  
-            ser.write(b'B5\n')
-            
-        if joystick.get_button(6):
-            highlight_area(BUTTON_6_POS, BUTTON_INDICATOR_COLOR)  
-            ser.write(b'B6\n')
-            
-        if joystick.get_button(7):
-            highlight_area(BUTTON_7_POS, BUTTON_INDICATOR_COLOR)  
-            ser.write(b'B7\n')
+            ser.write(b'B3ON\n')
+            button3_on = True
 
+        if not joystick.get_button(3) and button3_on:
+            ser.write(b'B3OFF\n')
+            button3_on = False
+            
+        if joystick.get_button(4) and not button4_on:
+            highlight_area(BUTTON_4_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B4ON\n')
+            button4_on = True
+
+        if not joystick.get_button(4) and button4_on:
+            ser.write(b'B4OFF\n')
+            button4_on = False
+            
+        if joystick.get_button(5) and not button5_on:
+            highlight_area(BUTTON_5_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B5ON\n')
+            button5_on = True
+            
+        if not joystick.get_button(5) and button5_on:
+            ser.write(b'B5OFF\n')
+            button5_on = False
+            
+        if joystick.get_button(6) and not button6_on:
+            highlight_area(BUTTON_6_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B6ON\n')
+            button6_on = True
+
+        if not joystick.get_button(6) and button6_on:
+            ser.write(b'B6OFF\n')
+            button6_on = False
+            
+        if joystick.get_button(7) and not button7_on:
+            highlight_area(BUTTON_7_POS, BUTTON_INDICATOR_COLOR)  
+            ser.write(b'B7ON\n')
+            button7_on = True
+
+        if not joystick.get_button(7) and button7_on:
+            ser.write(b'B7OFF\n')
+            button7_on = False
+            
         # Add more button/axis mappings here...
 
-        left_axis_x = joystick.get_axis(0)
-        if left_axis_x != left_axis_x_old:
+        left_axis_x = round(joystick.get_axis(0), 2)
+        if left_axis_x != left_axis_x_old and abs(left_axis_x - left_axis_x_old) > 0.05:
             ser.write(f"LX{left_axis_x}\n".encode())
             left_axis_x_old = left_axis_x
 
-        left_axis_y = joystick.get_axis(1)
-        if left_axis_y != left_axis_y_old:
+        left_axis_y = round(joystick.get_axis(1), 2)
+        if left_axis_y != left_axis_y_old and abs(left_axis_y - left_axis_y_old) > 0.05:
             ser.write(f"LY{left_axis_y}\n".encode())
             left_axis_y_old = left_axis_y
 
-        left_trigger_axis = joystick.get_axis(2)
-        if left_trigger_axis != left_trigger_axis_old:
+        left_trigger_axis = round(joystick.get_axis(2), 2)
+        if left_trigger_axis != left_trigger_axis_old and abs(left_trigger_axis - left_trigger_axis_old) > 0.05:
             ser.write(f"LT{left_trigger_axis}\n".encode())
             left_trigger_axis_old = left_trigger_axis
 
-        right_axis_x = joystick.get_axis(3)
-        if right_axis_x != right_axis_x_old:
+        right_axis_x = round(joystick.get_axis(3), 2)
+        if right_axis_x != right_axis_x_old and abs(right_axis_x - right_axis_x_old) > 0.05:
             ser.write(f"RX{right_axis_x}\n".encode())
             right_axis_x_old = right_axis_x
 
-        right_axis_y = joystick.get_axis(4)
-        if right_axis_y != right_axis_y_old:
+        right_axis_y = round(joystick.get_axis(4), 2)
+        if right_axis_y != right_axis_y_old and abs(right_axis_y - right_axis_y_old) > 0.05:
             ser.write(f"RY{right_axis_y}\n".encode())
             right_axis_y_old = right_axis_y
 
-        right_trigger_axis = joystick.get_axis(5)
-        if right_trigger_axis != right_trigger_axis_old:
+        right_trigger_axis = round(joystick.get_axis(5), 2)
+        if right_trigger_axis != right_trigger_axis_old and abs(right_trigger_axis - right_trigger_axis_old) > 0.05:
             ser.write(f"RT{right_trigger_axis}\n".encode())
             right_trigger_axis_old = right_trigger_axis
 

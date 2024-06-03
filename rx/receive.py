@@ -28,12 +28,24 @@ the onboard led is gpio pin 35
 
 sx = SX1262(spi_bus=1, clk=9, mosi=10, miso=11, cs=8, irq=14, rst=12, gpio=13)
 
+def rx_callback(events):
+    if events & SX1262.RX_DONE:
+        msg, err = sx.recv()
+        error = SX1262.STATUS[err]
+        print("MSG:")
+        print(msg)
+        print("ERR:")
+        print(error)
+        print("-----")
+
 def begin_lora():
     sx.begin(freq=923, bw=125.0, sf=7, cr=8, syncWord=0x12,
          power=21, currentLimit=60.0, preambleLength=8,
          implicit=False, implicitLen=0xFF,
          crcOn=False, txIq=False, rxIq=False,
-         tcxoVoltage=1.7, useRegulatorLDO=False, blocking=True) 
+         tcxoVoltage=1.7, useRegulatorLDO=False, blocking=False) 
+
+    sx.setBlockingCallback(False, rx_callback)
 
 begin_lora()
 
